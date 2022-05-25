@@ -4,20 +4,27 @@ private:
 
 	struct Node {
 		const T data;
-		Node const* left;
-		Node const* right;
+		const Node* left;
+		const Node* right;
 	};
 
-	std::function<bool(T, T)> comparator;
-	Node const* root;
+	const std::function<bool(const T&, const T&)> comparator;
+	const Node* root;
 
-	BinaryTree(std::function<bool(T, T)> comparator, Node const* root) :
+	void forEach(std::function<void(const T&)> сonsumer, const Node* node) const noexcept {
+		if (node == nullptr) return;
+		сonsumer(node->data);
+		forEach(сonsumer, node->left);
+		forEach(сonsumer, node->right);
+	}
+
+	BinaryTree(std::function<bool(const T&, const T&)> comparator, const Node* root) :
 		comparator(comparator), root(root) {}
 
 public:
 
-	BinaryTree(std::function<bool(T, T)> comparator) :
-		BinaryTree(comparator, nullptr) {}
+	BinaryTree(std::function<bool(const T&, const T&)> comparator) :
+		BinaryTree(comparator, 0) {}
 
 	BinaryTree with(T object) const noexcept {
 		return BinaryTree(
@@ -42,14 +49,7 @@ public:
 		);
 	}
 
-	void forEach(std::function<void(T)> сonsumer) const noexcept {
-		std::function<void(Node const*)> iterate = 
-			[&iterate, &сonsumer](Node const* node) {
-			if (node == nullptr) return;
-			сonsumer(node->data);
-			iterate(node->left);
-			iterate(node->right);
-		};
-		iterate(root);
+	void forEach(std::function<void(const T&)> сonsumer) const noexcept {
+		forEach(сonsumer, root);
 	}
 };
